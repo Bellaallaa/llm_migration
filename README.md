@@ -5,9 +5,9 @@
 
 ---
 
-## 队友快速上手（3 步）
+## 快速上手（3 步）
 
-1. **环境**：`conda create -n llm_migration python=3.11`（或见下文 `requirements`），安装 `openai`、`anthropic`、`pytest`、`pytest-cov`（见 `requirements-paper.txt`）。
+1. **环境**：`conda create -n llm_migration`（或见下文 `requirements`），安装 `openai`、`anthropic`、`pytest`、`pytest-cov`（见 `requirements-paper.txt`）。
 2. **密钥**：在 [SiliconFlow 控制台](https://siliconflow.cn) 创建 API Key，在终端设置 `SILICONFLOW_API_KEY`（勿提交到 Git）。
 3. **数据**：本仓库包含 `TestMigrationsInPy` 数据集；**完整上游仓库**（如 Streamlit）放在本地 `_repos/`，由各人自行 `git clone`（体积大，已 `.gitignore`）。
 
@@ -63,29 +63,3 @@ llm_migration/
 - **验证**：`migrate_iterative` 在成功时可用 `--cov-package` + `--ground-truth-after` 对比 **合并覆盖率**（见 `result.json` 中 `coverage_evaluation`）。
 - **上游仓库**：需在 `_repos/<project>` 检出与 `output.info` 中 **commit_hash** 一致的版本，并 **`pip install -e lib`**（Streamlit 等）后再跑 pytest。
 
----
-
-## 推送到 GitHub（维护者操作）
-
-1. 在 GitHub 上新建 **空仓库**（不要勾选自动添加 README）。
-2. 在本目录执行：
-
-```powershell
-cd "D:\course\25-26SPRING\软件测试导论\大作业\llm_migration"
-git init
-git add .
-git status   # 确认没有 _repos、outputs、密钥文件
-git commit -m "Initial commit: LLM unittest→pytest migration tooling and docs"
-git branch -M main
-git remote add origin https://github.com/<你的用户名>/<仓库名>.git
-git push -u origin main
-```
-
-3. **切勿**将 API Key、`_repos` 下完整克隆、过大 `outputs` 推上去；若需共享某次 `result.json`，可单独复制到小文件或打在 Release 附件里。
-
----
-
-## 协作约定（建议）
-
-- 大实验前在 **`PROGRESS.md`** 打勾/写日期。
-- 模型名、温度、策略变更请在 PR 或 commit message 里写一句，便于复现。
