@@ -1,0 +1,7 @@
+"commit_hash": "a73e4518cf3d10fd239cdbd1be3bcda43443bf2a",
+"commit_link": "https://github.com/pandas-dev/pandas/commit/a73e4518cf3d10fd239cdbd1be3bcda43443bf2a",
+"testFilesChanged": 4,
+"testFilesChangedWithMigrations": 1,
+"filesWithMigration": ["pandas/tests/test_internals.py"],
+"type": ["assert", "fixture"],
+"numberOfMigration": 41

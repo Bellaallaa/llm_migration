@@ -1,0 +1,7 @@
+"commit_hash": "6cd8a442938f866d93a44490275c291f81700d5b",
+"commit_link": "https://github.com/aio-libs/aiohttp/commit/6cd8a442938f866d93a44490275c291f81700d5b",
+"testFilesChanged": 5,
+"testFilesChangedWithMigrations": 1,
+"filesWithMigration": ["tests/test_signals.py"],
+"type": ["assert", "fixture", "import", "testcase"],
+"numberOfMigration": 1

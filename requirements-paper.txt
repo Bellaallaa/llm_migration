@@ -1,0 +1,2 @@
+# Optional extras for paper-style evaluation (pytest + coverage in cloned repos)
+pytest-cov>=4.0

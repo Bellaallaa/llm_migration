@@ -1,0 +1,28 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+.env
+.env.*
+*.egg-info/
+dist/
+build/
+
+# API keys / secrets (never commit)
+*.pem
+secrets.*
+
+# Local clones of upstream projects — huge; teammates clone themselves
+_repos/
+
+# Experiment outputs (logs/code dumps can be large). Track selectively if needed.
+outputs/
+
+# IDE / OS
+.idea/
+.vscode/
+*.swp
+Thumbs.db
+.DS_Store

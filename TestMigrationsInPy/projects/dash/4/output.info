@@ -1,0 +1,7 @@
+"commit_hash": "933bef2c58166eca6b94af029efd8361f444cbf3",
+"commit_link": "https://github.com/plotly/dash/commit/933bef2c58166eca6b94af029efd8361f444cbf3",
+"testFilesChanged": 4,
+"testFilesChangedWithMigrations": 2,
+"filesWithMigration": ["packages/dash-html-components/tests/test_dash_html_components.py", "packages/dash-html-components/tests/test_integration.py"],
+"type": ["assert", "import", "testcase"],
+"numberOfMigration": 2
