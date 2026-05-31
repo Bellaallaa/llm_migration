@@ -32,6 +32,7 @@ def run_pytest_cov_json(
     cwd: Path,
     cov_packages: list[str],
     timeout: int,
+    python_executable: str = "python",
 ) -> tuple[float | None, str, int]:
     """
     Run pytest --cov on one test file; write JSON via --cov-report=json:tempfile.
@@ -43,7 +44,7 @@ def run_pytest_cov_json(
         json_path = Path(tmp.name)
     try:
         cmd: list[str] = [
-            "python",
+            python_executable,
             "-m",
             "pytest",
             str(test_file),

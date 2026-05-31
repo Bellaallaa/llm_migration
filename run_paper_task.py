@@ -16,9 +16,25 @@ This prints the exact command; add --execute to run it via subprocess.
 from __future__ import annotations
 
 import argparse
+import re
 import subprocess
 import sys
 from pathlib import Path
+
+
+def infer_github_project(repo: Path) -> str | None:
+    try:
+        proc = subprocess.run(
+            ["git", "-C", str(repo), "remote", "get-url", "origin"],
+            text=True,
+            capture_output=True,
+            check=False,
+        )
+    except OSError:
+        return None
+    url = proc.stdout.strip()
+    match = re.search(r"github\.com[:/]([^/]+/[^/.]+)(?:\.git)?$", url)
+    return match.group(1) if match else None
 
 
 def main() -> None:
@@ -37,24 +53,35 @@ def main() -> None:
     p.add_argument("--model", required=True)
     p.add_argument("--strategy", default="zero-shot")
     p.add_argument("--temperature", type=float, default=0.0)
-    p.add_argument("--max-repairs", type=int, default=3)
+    p.add_argument("--max-iters", type=int, default=3)
+    p.add_argument("--max-repairs", type=int, help="Legacy alias passed through as repairs after the initial attempt")
+    p.add_argument("--feedback-mode", choices=("prev", "full"), default="prev")
     p.add_argument("--timeout", type=int, default=600)
     p.add_argument("--max-tokens", type=int, default=16384)
+    p.add_argument(
+        "--test-python",
+        help="Python executable inside the target project environment. Defaults to the current interpreter.",
+    )
     p.add_argument("--output-dir", type=Path, help="Optional explicit outputs directory")
+    p.add_argument("--out-dir", dest="output_dir", type=Path, help="Alias for --output-dir")
+    p.add_argument("--case-id", help="Optional experiment case id written to result.json")
+    p.add_argument("--project", help="Optional project id written to result.json")
     p.add_argument("--execute", action="store_true", help="Run migrate_iterative.py with constructed argv")
     args = p.parse_args()
 
     repo = args.repo.resolve()
+    project = args.project or infer_github_project(repo)
     abs_test = (repo / args.test_file).resolve()
     if not abs_test.parent.is_dir():
         print(f"error: parent of test file does not exist: {abs_test.parent}", file=sys.stderr)
         sys.exit(1)
 
     script = Path(__file__).resolve().parent / "migrate_iterative.py"
+    test_python = args.test_python or sys.executable
     out = args.output_dir
     if out is None:
         slug = abs_test.as_posix().replace("/", "_").replace(":", "")[-80:]
-        out = Path("outputs") / "iterative" / f"paper_{slug}_{args.model.replace('/', '_')}"
+        out = Path("outputs") / "iterative" / f"paper_{slug}_{args.model.replace('/', '_')}_{args.feedback_mode}"
 
     cmd: list[str] = [
         sys.executable,
@@ -70,23 +97,33 @@ def main() -> None:
         args.strategy,
         "--temperature",
         str(args.temperature),
-        "--max-repairs",
-        str(args.max_repairs),
+        "--max-iters",
+        str(args.max_iters),
+        "--feedback-mode",
+        args.feedback_mode,
         "--timeout",
         str(args.timeout),
         "--max-tokens",
         str(args.max_tokens),
         "--test-cwd",
         str(repo),
+        "--test-python",
+        test_python,
         "--validation-copy-path",
         str(abs_test),
         "--test-command",
-        "python -m pytest -q {candidate}",
+        f"{test_python} -m pytest -q {{candidate}}",
     ]
     for pkg in args.cov_packages:
         cmd.extend(["--cov-package", pkg])
     if args.after:
         cmd.extend(["--ground-truth-after", str(args.after.resolve())])
+    if args.max_repairs is not None:
+        cmd.extend(["--max-repairs", str(args.max_repairs)])
+    if args.case_id:
+        cmd.extend(["--case-id", args.case_id])
+    if project:
+        cmd.extend(["--project", project])
 
     print("Command:")
     print(" ".join(cmd))
